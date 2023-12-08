@@ -1,0 +1,12 @@
+{
+    "name": "ec-cube\/simpleblog42",
+    "version": "4.2.2",
+    "description": "シンプルなブログ機能",
+    "type": "eccube-plugin",
+    "require": {
+        "ec-cube\/plugin-installer": "^2.0"
+    },
+    "extra": {
+        "code": "SimpleBlog42"
+    }
+}

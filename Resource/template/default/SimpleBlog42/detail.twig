@@ -1,0 +1,36 @@
+{% extends 'default_frame.twig' %}
+
+{% block main %}
+
+<div class="ec-searchnavRole">
+
+  <div class="ec-searchnavRole__topicpath">
+    <ol class="ec-topicpath">
+      <li class="ec-topicpath__item"><a href="{{ url('blog_index') }}">ブログ一覧</a>
+      <li class="ec-topicpath__divider">|</li>
+      <li class="ec-topicpath__item--active">{{ blog.title }}</li>
+    </ol>
+  </div>
+
+</div>
+
+
+<div class="ec-role">
+
+  <hr>
+  <div class="blog-{{ blog.id }} row">
+    <div class="col-md-8 col-md-offset-2">
+      <p class="text-right"><small>{{ blog.publish_date|date("Y/m/d") }}</small></p>
+      <h1 class="npsr-title">{{ blog.title }}</h1>
+
+      <div class="npsr-content">
+        {{ blog.description|raw }}
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+
+{% endblock %}
