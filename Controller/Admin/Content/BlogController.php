@@ -4,8 +4,12 @@ namespace Plugin\SimpleBlog42\Controller\Admin\Content;
 
 use Eccube\Controller\AbstractController;
 use Plugin\SimpleBlog42\Entity\Blog;
+use Plugin\SimpleBlog42\Entity\BlogCategory;
+
 use Plugin\SimpleBlog42\Form\Type\Admin\BlogType;
 use Plugin\SimpleBlog42\Repository\BlogRepository;
+use Plugin\SimpleBlog42\Repository\CategoryRepository;
+
 use Eccube\Util\CacheUtil;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -21,13 +25,23 @@ class BlogController extends AbstractController
     protected $blogRepository;
 
     /**
+     * @var CategoryRepository
+     */
+    protected $categoryRepository;
+
+    /**
      * BlogController constructor.
      *
      * @param BlogRepository $blogRepository
+     * @param CategoryRepository $categoryRepository
      */
-    public function __construct(BlogRepository $blogRepository)
+    public function __construct(
+        BlogRepository $blogRepository,
+        CategoryRepository $categoryRepository
+    )
     {
         $this->blogRepository = $blogRepository;
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -86,12 +100,45 @@ class BlogController extends AbstractController
             ->createBuilder(BlogType::class, $Blog);
 
         $form = $builder->getForm();
+
+        $categories = [];
+        $BlogCategories = $Blog->getBlogCategory();
+        foreach ($BlogCategories as $BlogCategory) {
+            /* @var $BlogCategory \Plugin\SimpleBlog42\Entity\BlogCategory */
+            $categories[] = $BlogCategory->getCategory();
+        }
+        $form['Category']->setData($categories);
+
+
+
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             if (!$Blog->getUrl()) {
                 $Blog->setLinkMethod(false);
             }
+
+            // カテゴリーの登録
+            // カテゴリーを一度クリア
+            $blogCategories = $Blog->getBlogCategory();
+            foreach ($blogCategories as $blogCategorory) {
+                $Blog->removeBlogCategory($blogCategorory);
+                $this->entityManager->remove($blogCategorory);
+            }
+
+            // カテゴリーの登録
+            $Categories = $form->get('Category')->getData();
+            foreach ($Categories as $Category) {
+                $BlogCategory = new BlogCategory();
+                $BlogCategory
+                    ->setBlog($Blog)
+                    ->setCategory($Category);
+                $Blog->addBlogCategory($BlogCategory);
+                $this->entityManager->persist($BlogCategory);
+            }
+            $this->entityManager->flush();
+
             $this->blogRepository->save($Blog);
 
             $this->addSuccess('admin.common.save_complete', 'admin');
@@ -99,12 +146,21 @@ class BlogController extends AbstractController
             // キャッシュの削除
             $cacheUtil->clearDoctrineCache();
 
-            return $this->redirectToRoute('admin_content_news_edit', ['id' => $Blog->getId()]);
+            return $this->redirectToRoute('admin_content_blog_edit', ['id' => $Blog->getId()]);
         }
+
+
+        // ツリー表示のため、ルートからのカテゴリを取得
+        $TopCategories = $this->categoryRepository->getList(null);
+        $ChoicedCategoryIds = array_map(function ($Category) {
+            return $Category->getId();
+        }, $form->get('Category')->getData());
 
         return [
             'form' => $form->createView(),
             'News' => $Blog,
+            'TopCategories' => $TopCategories,
+            'ChoicedCategoryIds' => $ChoicedCategoryIds,
         ];
     }
 

@@ -124,22 +124,75 @@
 
             <div class="c-contentsArea__secondaryCol">
                 <div class="c-secondaryCol">
+
+
+
+
                     <div class="card rounded border-0 mb-4">
                         <div class="card-header">
                             <div class="row">
                                 <div class="col-8">
                                     <div class="d-inline-block">
-                                        <span class="card-title">カテゴリ</span>
+                                        <span class="card-title">{{ 'admin.product.category__product_card_title'|trans }}</span>
                                     </div>
                                 </div>
                                 <div class="col-4 text-end">
-                                    <a data-bs-toggle="collapse" href="#category" aria-expanded="false" aria-controls="category">
+                                    <a data-bs-toggle="collapse" href="#category" aria-expanded="false"
+                                    aria-controls="category">
                                         <i class="fa fa-angle-up fa-lg"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
+                        <div class="collapse show ec-cardCollapse" id="category">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="input-group">
+                                                <div class="input-group-text">
+                                                    <span id="basic-addon1">
+                                                            <i class="fa fa-search"></i>
+                                                    </span>
+                                                </div>
+                                                <input id="search-category" class="form-control" type="search"
+                                                    placeholder="{{ 'admin.product.search_category'|trans }}"
+                                                    aria-label="Search">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {% macro tree(ChoicedIds, Category, form) %}
+                                    {% import _self as selfMacro %}
+                                    <li class="c-directoryTree--registerItem category-li">
+                                        <input type="checkbox" id="admin_blog_category_{{ Category.id }}" name="admin_blog[Category][]" value="{{ Category.id }}" {% if Category.id in ChoicedIds %}checked{% endif %}>
+                                        <label for="admin_blog_category_{{ Category.id }}">{{ Category.name }}</label>
+                                    </li>
+                                {% endmacro %}
+                                <div class="c-directoryTree--register rounded border mb-3 p-3">
+                                    {% import _self as renderMacro %}
+                                    {% for TopCategory in TopCategories %}
+                                        <ul class="list-unstyled">
+                                            {{ renderMacro.tree(ChoicedCategoryIds, TopCategory, form.Category) }}
+                                        </ul>
+                                    {% endfor %}
+                                    {{ form_errors(form.Category) }}
+                                </div>
+                                <div class="d-block text-center">
+                                    <a class="btn w-100 btn-ec-regular"
+                                    data-action="confirm"
+                                    href="{{ path('admin_content_blog') }}"
+                                    title="{{ 'admin.common.move_to_confirm_message'|trans({
+                                        '%name%' : 'admin.product.category_management'|trans}) }}">{{ 'admin.product.move_to_category'|trans }}</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                
+
+
+                
                 </div>
             </div>
 

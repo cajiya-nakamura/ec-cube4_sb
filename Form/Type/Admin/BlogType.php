@@ -4,6 +4,8 @@ namespace Plugin\SimpleBlog42\Form\Type\Admin;
 
 use Eccube\Common\EccubeConfig;
 use Plugin\SimpleBlog42\Entity\Blog;
+use Plugin\SimpleBlog42\Entity\Category;
+use Plugin\SimpleBlog42\Repository\CategoryRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -21,9 +23,18 @@ class BlogType extends AbstractType
      */
     protected $eccubeConfig;
 
-    public function __construct(EccubeConfig $eccubeConfig)
+    /**
+     * @var CategoryRepository
+     */
+    protected $categoryRepository;
+
+    public function __construct(
+        EccubeConfig $eccubeConfig,
+        CategoryRepository $categoryRepository
+    )
     {
         $this->eccubeConfig = $eccubeConfig;
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -79,6 +90,16 @@ class BlogType extends AbstractType
                 'choices' => ['admin.content.news.display_status__show' => true, 'admin.content.news.display_status__hide' => false],
                 'required' => true,
                 'expanded' => false,
+            ])
+            ->add('Category', ChoiceType::class, [
+                'choice_label' => 'Name',
+                'multiple' => true,
+                'mapped' => false,
+                'expanded' => true,
+                'choices' => $this->categoryRepository->getList(null, true),
+                'choice_value' => function (Category $Category = null) {
+                    return $Category ? $Category->getId() : null;
+                },
             ]);
     }
 
