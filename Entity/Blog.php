@@ -102,6 +102,21 @@ class Blog extends AbstractEntity
     private $Creator;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="Plugin\SimpleBlog42\Entity\BlogCategory", mappedBy="Blog", cascade={"remove"})
+     */
+    private $BlogCategory;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->BlogCategory = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * Get id.
      *
      * @return int
@@ -322,4 +337,64 @@ class Blog extends AbstractEntity
     {
         return $this->Creator;
     }
+
+
+    /**
+     * Add blogCategory.
+     *
+     * @param \Plugin\SimpleBlog42\Entity\BlogCategory $blogCategory
+     *
+     * @return Product
+     */
+    public function addBlogCategory(BlogCategory $blogCategory)
+    {
+        $this->BlogCategory[] = $blogCategory;
+
+        return $this;
+    }
+
+    /**
+     * Remove blogCategory.
+     *
+     * @param \Plugin\SimpleBlog42\Entity\BlogCategory $blogCategory
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeBlogCategory(BlogCategory $blogCategory)
+    {
+        return $this->BlogCategory->removeElement($blogCategory);
+    }
+
+    /**
+     * Get blogCategory.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBlogCategory()
+    {
+        return $this->BlogCategory;
+    }
+
+    /**
+     * Get Tag
+     * フロント側タグsort_no順の配列を作成する
+     *
+     * @return []Tag
+     */
+    public function getCategories()
+    {
+        $categories = [];
+
+        foreach ($this->getBlogCategory() as $blogCategory) {
+            $categories[] = $blogCategory->getCategory();
+        }
+
+        usort($categories, function (Category $tag1, Category $tag2) {
+            return $tag1->getSortNo() < $tag2->getSortNo();
+        });
+
+        return $categories;
+    }
+
+
 }

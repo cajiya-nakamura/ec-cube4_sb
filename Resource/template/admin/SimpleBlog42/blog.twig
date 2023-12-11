@@ -42,8 +42,16 @@
                                         <div class="col d-flex align-items-center"><a
                                                     href="{{ url('admin_content_blog_edit', {id: Blog.id}) }}">{{ Blog.title }}</a>
                                         </div>
-                                        <div class="col-2">
+                                        <div class="col-3">
                                             <div class="row">
+                                                <div class="col px-0 text-center">
+                                                    <a class="btn btn-ec-actionIcon" target="_blank"
+                                                       href="{{ url('blog_detail', {id: Blog.id}) }}"
+                                                       data-bs-toggle="tooltip" data-bs-placement="top"
+                                                       title="表示する">
+                                                        <i class="fa fa-eye fa-lg text-secondary"></i>
+                                                    </a>
+                                                </div>
                                                 <div class="col px-0 text-center">
                                                     <a class="btn btn-ec-actionIcon"
                                                        href="{{ url('admin_content_blog_edit', {id: Blog.id}) }}"

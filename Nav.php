@@ -23,7 +23,7 @@ class Nav implements EccubeNav
                             ],
                             'category' => [
                                 'name' => 'カテゴリー',
-                                'url' => 'admin_content_blog',
+                                'url' => 'admin_content_blog_category',
                             ]
                         ],
                     ],
