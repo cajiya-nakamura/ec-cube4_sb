@@ -9,6 +9,7 @@ use Plugin\SimpleBlog42\Repository\CategoryRepository;
 use Eccube\Controller\AbstractController;
 use Eccube\Event\EccubeEvents;
 use Eccube\Event\EventArgs;
+use Plugin\SimpleBlog42\Entity\BlogCategory;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -66,7 +67,7 @@ class CategoryController extends AbstractController
             $id = $EditCategory->getId();
             $forms[$id] = $this
                 ->formFactory
-                ->createNamed('category_'.$id, ProductTag::class, $EditCategory);
+                ->createNamed('category_'.$id, BlogCategoryType::class, $EditCategory);
         }
 
         if ('POST' === $request->getMethod()) {
