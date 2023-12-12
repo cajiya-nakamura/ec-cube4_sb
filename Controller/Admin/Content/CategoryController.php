@@ -30,7 +30,7 @@ class CategoryController extends AbstractController
 
     /**
      * @Route("/%eccube_admin_route%/content/blog_category", name="admin_content_blog_category", methods={"GET", "POST"})
-     * @Template("@admin/SimpleBlog42/tag.twig")
+     * @Template("@admin/SimpleBlog42/category.twig")
      *
      * @param Request $request
      *
@@ -147,7 +147,7 @@ class CategoryController extends AbstractController
     }
 
     /**
-     * @Route("/%eccube_admin_route%/product/tag/sort_no/move", name="admin_content_blog_category_sort_no_move", methods={"POST"})
+     * @Route("/%eccube_admin_route%/content/blog_category/sort_no/move", name="admin_content_blog_category_sort_no_move", methods={"POST"})
      */
     public function moveSortNo(Request $request)
     {

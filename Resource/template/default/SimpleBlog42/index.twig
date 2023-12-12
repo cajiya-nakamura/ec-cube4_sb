@@ -7,7 +7,21 @@
   <div class="ec-searchnavRole__topicpath">
     <ol class="ec-topicpath">
       <li class="ec-topicpath__item"><a href="{{ url('blog_index') }}">{{ 'ブログ一覧'|trans }}</a>
+      {% if Category %}
+      <li class="ec-topicpath__divider">|</li>
+      <li class="ec-topicpath__item"><a href="{{ url('blog_index', {'category_id': Category.id}) }}">{{ Category.name }}</a>
+      {% endif %}
     </ol>
+  </div>
+
+  <div class="ec-itemNav">
+    <ul class="ec-itemNav__nav">
+    {% if Categories %}
+      {% for Category in Categories %}
+      <li><a href="{{ url('blog_index', {'category_id': Category.id}) }}">{{ Category.name }}</a></li>
+      {% endfor %}
+    {% endif %}
+    </ul>
   </div>
 
   <div class="ec-searchnavRole__infos">
