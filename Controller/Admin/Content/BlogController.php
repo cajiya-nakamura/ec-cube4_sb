@@ -137,9 +137,11 @@ class BlogController extends AbstractController
                 $Blog->addBlogCategory($BlogCategory);
                 $this->entityManager->persist($BlogCategory);
             }
+            
+            $this->entityManager->persist($Blog);
             $this->entityManager->flush();
-
-            $this->blogRepository->save($Blog);
+    
+            // $this->blogRepository->save($Blog);
 
             $this->addSuccess('admin.common.save_complete', 'admin');
 

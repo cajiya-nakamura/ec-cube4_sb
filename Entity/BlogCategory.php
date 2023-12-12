@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * BlogCategory
  *
- * @ORM\Table(name="dtb_sb_blog_category")
+ * @ORM\Table(name="plg_sb_blog_category")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discriminator_type", type="string", length=255)
  * @ORM\HasLifecycleCallbacks()
@@ -53,7 +53,7 @@ class BlogCategory extends AbstractEntity
      *
      * @ORM\ManyToOne(targetEntity="Plugin\SimpleBlog42\Entity\Blog", inversedBy="BlogCategory")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="blog_id", referencedColumnName="id")
      * })
      */
     private $Blog;
@@ -63,7 +63,7 @@ class BlogCategory extends AbstractEntity
      *
      * @ORM\ManyToOne(targetEntity="Plugin\SimpleBlog42\Entity\Category", inversedBy="BlogCategory")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="category_id", referencedColumnName="id")
      * })
      */
     private $Category;

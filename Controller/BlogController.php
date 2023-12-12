@@ -6,6 +6,7 @@ use Eccube\Controller\AbstractController;
 
 use Plugin\SimpleBlog42\Repository\BlogRepository;
 use Plugin\SimpleBlog42\Entity\Blog;
+use Plugin\SimpleBlog42\Repository\CategoryRepository;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,6 +17,8 @@ use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Constraints as Assert;
 use Knp\Component\Pager\PaginatorInterface;
+// use Doctrine\ORM\Query\AST\Join;
+use Doctrine\ORM\Query\Expr\Join;
 
 class BlogController extends AbstractController
 {
@@ -25,15 +28,24 @@ class BlogController extends AbstractController
    */
   protected $blogRepository;
 
+  /**
+   * @var CategoryRepository
+   */
+  protected $categoryRepository;
 
   /**
-   * BlogRepository constructor.
+   * BlogController constructor.
+   *
+   * @param BlogRepository $blogRepository
+   * @param CategoryRepository $categoryRepository
    */
   public function __construct(
-    BlogRepository $blogRepository
+    BlogRepository $blogRepository,
+    CategoryRepository $categoryRepository
   )
   {
-    $this->blogRepository = $blogRepository;
+      $this->blogRepository = $blogRepository;
+      $this->categoryRepository = $categoryRepository;
   }
 
 
@@ -49,8 +61,27 @@ class BlogController extends AbstractController
     if ($request->getMethod() === 'GET') {
         $request->query->set('pageno', $request->query->get('pageno', '1'));
     }
+
+
     $qb = $this->blogRepository->getQueryBuilderPublished();
-    $query = $qb->getQuery()->useResultCache(true, $this->eccubeConfig['eccube_result_cache_lifetime_short']);
+
+
+    // 値の確認 int or false
+    $category_id = filter_var( $request->query->get('category_id') , FILTER_VALIDATE_INT);
+
+    $Category = null;
+    if ($category_id !== null) {
+
+      $Category = $this->categoryRepository->findOneBy(['id' => $category_id ]);
+
+      if( $Category !== null ){
+        $qb->join('Plugin\SimpleBlog42\Entity\BlogCategory', 'bc', Join::WITH, 'bc.Blog = n.id')
+          ->andWhere('bc.Category = :category_id')
+          ->setParameter('category_id', $category_id);
+      }
+    }
+  
+    $query = $qb->getQuery();
 
     /** @var SlidingPagination $pagination */
     $pagination = $paginator->paginate(
@@ -58,7 +89,11 @@ class BlogController extends AbstractController
         $request->query->get('pageno', '1')
     );
 
+    $Categories = $this->categoryRepository->getList();
+
     return [
+      'Categories' => $Categories,
+      'Category' => $Category,
       'pagination' => $pagination,
     ];
   }
@@ -78,10 +113,15 @@ class BlogController extends AbstractController
     }
 
     $BlogUrl = $Blog->getUrl();
+
     if ( $BlogUrl !== null ){
       return new RedirectResponse( $BlogUrl );
     }
+    
+    $Categories = $Blog->getCategories();
+
     return [
+      'Categories' => $Categories,
       'blog' => $Blog,
     ];
   }
